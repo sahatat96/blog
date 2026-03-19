@@ -7,7 +7,7 @@ import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, showComments = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -47,36 +47,40 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				<slot />
 			</div>
 
-			<section class="giscus-wrapper" style="max-width: 800px; margin: 3rem auto 0; padding: 0 1.5rem;">
-				<div class="giscus"></div>
-			</section>
+			{showComments && (
+				<section class="giscus-wrapper" style="max-width: 800px; margin: 3rem auto 0; padding: 0 1.5rem;">
+					<div class="giscus"></div>
+				</section>
+			)}
 		</main>
 		<Footer />
 
-		<script is:inline>
-			function loadGiscus() {
-				const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark_dimmed';
-				const existing = document.querySelector('.giscus-frame');
-				if (existing) existing.remove();
+		{showComments && (
+			<script is:inline>
+				function loadGiscus() {
+					const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark_dimmed';
+					const existing = document.querySelector('.giscus-frame');
+					if (existing) existing.remove();
 
-				const script = document.createElement('script');
-				script.src = 'https://giscus.app/client.js';
-				script.setAttribute('data-repo', 'sahatat96/blog');
-				script.setAttribute('data-repo-id', 'R_kgDORq_Amg');
-				script.setAttribute('data-category', 'Announcements');
-				script.setAttribute('data-category-id', 'DIC_kwDORq_Ams4C4wHg');
-				script.setAttribute('data-mapping', 'pathname');
-				script.setAttribute('data-strict', '1');
-				script.setAttribute('data-reactions-enabled', '0');
-				script.setAttribute('data-emit-metadata', '0');
-				script.setAttribute('data-input-position', 'top');
-				script.setAttribute('data-theme', theme);
-				script.setAttribute('data-lang', 'en');
-				script.setAttribute('crossorigin', 'anonymous');
-				script.async = true;
-				document.querySelector('.giscus').appendChild(script);
-			}
-			loadGiscus();
-		</script>
+					const script = document.createElement('script');
+					script.src = 'https://giscus.app/client.js';
+					script.setAttribute('data-repo', 'sahatat96/blog');
+					script.setAttribute('data-repo-id', 'R_kgDORq_Amg');
+					script.setAttribute('data-category', 'Announcements');
+					script.setAttribute('data-category-id', 'DIC_kwDORq_Ams4C4wHg');
+					script.setAttribute('data-mapping', 'pathname');
+					script.setAttribute('data-strict', '1');
+					script.setAttribute('data-reactions-enabled', '0');
+					script.setAttribute('data-emit-metadata', '0');
+					script.setAttribute('data-input-position', 'top');
+					script.setAttribute('data-theme', theme);
+					script.setAttribute('data-lang', 'en');
+					script.setAttribute('crossorigin', 'anonymous');
+					script.async = true;
+					document.querySelector('.giscus').appendChild(script);
+				}
+				loadGiscus();
+			</script>
+		)}
 	</body>
 </html>
