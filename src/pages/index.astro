@@ -1,0 +1,105 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const categoryMap = new Map();
+
+allPosts.forEach(post => {
+	const cat = post.data.category || 'Article';
+	if (!categoryMap.has(cat)) {
+		categoryMap.set(cat, []);
+	}
+	categoryMap.get(cat).push(post);
+});
+
+// Sort Translation posts: group by series name, then by chapter ascending
+if (categoryMap.has('Translation')) {
+	categoryMap.get('Translation').sort((a: any, b: any) => {
+		const seriesA = a.data.series || '';
+		const seriesB = b.data.series || '';
+		if (seriesA !== seriesB) return seriesA.localeCompare(seriesB);
+		return (a.data.chapter || 0) - (b.data.chapter || 0);
+	});
+}
+
+const sortedCategories = ['All', ...Array.from(categoryMap.keys()).sort()];
+
+// Build display list: non-translation by date, then each translation series grouped
+const nonTranslation = allPosts.filter((p: any) => (p.data.category || 'Article') !== 'Translation');
+const translationSorted = categoryMap.get('Translation') || [];
+const displayPosts = [...nonTranslation, ...translationSorted];
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<script is:inline>
+			const localTheme = localStorage.getItem('theme') || 'dark';
+			document.documentElement.setAttribute('data-theme', localTheme);
+		</script>
+	</head>
+	<body>
+		<Header />
+		<main class="container" style="padding-top: 4rem;">
+			
+			<div class="category-tabs">
+				{sortedCategories.map(cat => (
+					<button class="cat-tab" data-target={cat === 'All' ? 'all' : cat}>{cat}</button>
+				))}
+			</div>
+
+			<section class="minimal-post-list">
+				{displayPosts.map((post: any) => (
+					<a href={`/blog/${post.id}/`} class="list-item-link" data-category={post.data.category || 'Article'} style="padding: 1.25rem 0;">
+						<div class="list-item-meta">
+							<span class="cat-pill">{post.data.category || 'Article'}</span>
+							{post.data.series && <span style="color: var(--text); font-weight: 500;">{post.data.series} (Ch {post.data.chapter}) <span style="margin: 0 0.5rem; opacity: 0.5; color: var(--text-muted);">•</span></span>}
+							<span style="color: var(--text-muted);">
+								{post.data.pubDate.toLocaleDateString('en-us', {
+									year: 'numeric', month: 'short', day: 'numeric',
+								})}
+							</span>
+						</div>
+						<h2 class="list-item-title" style="font-size: 1.25rem;">{post.data.title}</h2>
+					</a>
+				))}
+			</section>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			const tabs = document.querySelectorAll('.cat-tab');
+			const items = document.querySelectorAll('.list-item-link');
+			
+			tabs.forEach(tab => {
+				tab.addEventListener('click', () => {
+					tabs.forEach(t => t.classList.remove('active'));
+					tab.classList.add('active');
+					
+					const target = tab.getAttribute('data-target');
+					items.forEach(item => {
+						if (target === 'all' || item.getAttribute('data-category') === target) {
+							item.style.display = 'block';
+							// Optionally add a tiny fade-in animation by resetting opacity
+							item.style.opacity = '0';
+							setTimeout(() => item.style.opacity = '1', 10);
+						} else {
+							item.style.display = 'none';
+						}
+					});
+				});
+			});
+			// Set initial state
+			if(tabs.length > 0) tabs[0].classList.add('active');
+		</script>
+	</body>
+</html>

@@ -1,0 +1,83 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+	<head>
+		<BaseHead title={title} description={description} />
+		<script is:inline>
+			const localTheme = localStorage.getItem('theme') || 'dark';
+			document.documentElement.setAttribute('data-theme', localTheme);
+		</script>
+	</head>
+	<body>
+		<Header />
+		<main class="article-page">
+			<header class="article-header">
+				<h1 class="article-page-title">{title}</h1>
+				<div class="article-page-meta">
+					<span>Ngasa</span>
+					<span>—</span>
+					<span>
+						{pubDate.toLocaleDateString('en-us', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</span>
+				</div>
+			</header>
+
+			{heroImage && (
+				<div class="article-cover">
+					<Image src={heroImage} width={1020} height={510} alt="" />
+				</div>
+			)}
+			
+			<div class="article-body">
+				<slot />
+			</div>
+
+			<section class="giscus-wrapper" style="max-width: 800px; margin: 4rem auto 0; padding: 0 1.5rem;">
+				<h3 style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-1); margin-bottom: 1.5rem;">Comments</h3>
+				<div class="giscus"></div>
+			</section>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			function loadGiscus() {
+				const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark_dimmed';
+				const existing = document.querySelector('.giscus-frame');
+				if (existing) existing.remove();
+
+				const script = document.createElement('script');
+				script.src = 'https://giscus.app/client.js';
+				script.setAttribute('data-repo', 'OWNER/REPO');
+				script.setAttribute('data-repo-id', 'REPO_ID');
+				script.setAttribute('data-category', 'Announcements');
+				script.setAttribute('data-category-id', 'CATEGORY_ID');
+				script.setAttribute('data-mapping', 'pathname');
+				script.setAttribute('data-strict', '0');
+				script.setAttribute('data-reactions-enabled', '1');
+				script.setAttribute('data-emit-metadata', '0');
+				script.setAttribute('data-input-position', 'top');
+				script.setAttribute('data-theme', theme);
+				script.setAttribute('data-lang', 'en');
+				script.setAttribute('crossorigin', 'anonymous');
+				script.async = true;
+				document.querySelector('.giscus').appendChild(script);
+			}
+			loadGiscus();
+		</script>
+	</body>
+</html>
