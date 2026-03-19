@@ -10,7 +10,7 @@ export async function GET(context) {
 		site: context.site,
 		items: posts.map((post) => ({
 			...post.data,
-			link: `/blog/${post.id}/`,
+			link: `/blog/${post.id}/`, // This is relative to the site URL, so /blog/id/ works if site is correctly set
 		})),
 	});
 }

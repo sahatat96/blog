@@ -59,7 +59,7 @@ const displayPosts = [...nonTranslation, ...translationSorted];
 
 			<section class="minimal-post-list">
 				{displayPosts.map((post: any) => (
-					<a href={`/blog/${post.id}/`} class="list-item-link" data-category={post.data.category || 'Article'} style="padding: 1.25rem 0;">
+					<a href={`${import.meta.env.BASE_URL}/${post.id}/`} class="list-item-link" data-category={post.data.category || 'Article'} style="padding: 1.25rem 0;">
 						<div class="list-item-meta">
 							<span class="cat-pill">{post.data.category || 'Article'}</span>
 							{post.data.series && <span style="color: var(--text); font-weight: 500;">{post.data.series} (Ch {post.data.chapter}) <span style="margin: 0 0.5rem; opacity: 0.5; color: var(--text-muted);">•</span></span>}
