@@ -47,8 +47,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				<slot />
 			</div>
 
-			<section class="giscus-wrapper" style="max-width: 800px; margin: 4rem auto 0; padding: 0 1.5rem;">
-				<h3 style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-1); margin-bottom: 1.5rem;">Comments</h3>
+			<section class="giscus-wrapper" style="max-width: 800px; margin: 3rem auto 0; padding: 0 1.5rem;">
 				<div class="giscus"></div>
 			</section>
 		</main>
@@ -67,8 +66,8 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				script.setAttribute('data-category', 'Announcements');
 				script.setAttribute('data-category-id', 'DIC_kwDORq_Ams4C4wHg');
 				script.setAttribute('data-mapping', 'pathname');
-				script.setAttribute('data-strict', '0');
-				script.setAttribute('data-reactions-enabled', '1');
+				script.setAttribute('data-strict', '1');
+				script.setAttribute('data-reactions-enabled', '0');
 				script.setAttribute('data-emit-metadata', '0');
 				script.setAttribute('data-input-position', 'top');
 				script.setAttribute('data-theme', theme);
